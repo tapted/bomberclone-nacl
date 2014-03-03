@@ -89,6 +89,6 @@ bomberclone: bootstrap
 app: bomberclone
 	cp bomberclone/src/bomberclone app/bomberclone.pexe
 	$(PNACL_FINALIZE) app/bomberclone.pexe
-	(cd bomberclone && tar -c data) | (cd app && tar x)
+	(cd bomberclone && tar -c --exclude='Makefile*' --exclude=CVS --exclude=.* data) | (cd app && tar x)
 
 .PHONY: bootstrap app
