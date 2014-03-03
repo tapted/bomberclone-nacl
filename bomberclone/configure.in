@@ -31,9 +31,9 @@ dnl Check for SDL
         :,
         AC_MSG_ERROR(SDL not found. Make sure sdl-config is in your PATH, or specify with --with-sdl-prefix)
     )
-    
+
     CFLAGS="$SDL_CFLAGS $CFLAGS"
-	SDL_LIBS="$SDL_LIBS -lpng -ljpeg"
+	SDL_LIBS="$SDL_LIBS -lpng -lz -ljpeg"
     LIBS="$SDL_LIBS $LIBS"
 
 dnl Checks for header files.
@@ -128,7 +128,7 @@ have_rintf=no
 AC_TRY_COMPILE([
 #include <math.h>
 ],[
-int i; float f; i = rintf (f); 
+int i; float f; i = rintf (f);
 ],[
 have_rintf=yes
 ])
@@ -149,7 +149,7 @@ have_rint=no
 AC_TRY_COMPILE([
 #include <math.h>
 ],[
-int i; double f; i = rint (f); 
+int i; double f; i = rint (f);
 ],[
 have_rint=yes
 ])
@@ -170,7 +170,7 @@ have_powf=no
 AC_TRY_COMPILE([
 #include <math.h>
 ],[
-float i; float f = 2; float j = 2; i = powf (f,j); 
+float i; float f = 2; float j = 2; i = powf (f,j);
 ],[
 have_powf=yes
 ])
@@ -189,7 +189,7 @@ have_sqrtf=no
 AC_TRY_COMPILE([
 #include <math.h>
 ],[
-float i; float f = 2; i = sqrtf (f); 
+float i; float f = 2; i = sqrtf (f);
 ],[
 have_sqrtf=yes
 ])
@@ -209,7 +209,7 @@ have_floorf=no
 AC_TRY_COMPILE([
 #include <math.h>
 ],[
-int i; float f; i = floorf (f); 
+int i; float f; i = floorf (f);
 ],[
 have_floorf=yes
 ])
