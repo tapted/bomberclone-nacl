@@ -22,7 +22,7 @@ TARGET_HOST := nacl
 
 export NACL_SDK_ROOT NACL_ARCH NACL_GLIBC SDL_CONFIG C CC LD LDFLAGS CFLAGS
 
-all: bomberclone
+all: app
 
 $(NACL_SDK_PATH)/naclsdk:
 	test -n "$(NACL_SDK_PATH)"
@@ -75,4 +75,7 @@ bootstrap: autoconf.updated
 bomberclone: bootstrap
 	$(MAKE) -C bomberclone
 
-.PHONY: bootstrap
+app: bomberclone
+	cp bomberclone/src/bomberclone app/bomberclone.nmf
+
+.PHONY: bootstrap app
