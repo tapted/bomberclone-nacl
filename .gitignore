@@ -1,2 +1,15 @@
-local-*.mk
-naclsdk.updated
+/local-*.mk
+/*.updated
+
+Makefile.in
+bomberclone/aclocal.m4
+bomberclone/autom4te.cache/
+bomberclone/build/
+bomberclone/config.guess
+bomberclone/config.h.in
+bomberclone/config.log
+bomberclone/config.sub
+bomberclone/configure
+bomberclone/depcomp
+bomberclone/install-sh
+bomberclone/missing
