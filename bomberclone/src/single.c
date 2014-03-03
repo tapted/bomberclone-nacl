@@ -46,18 +46,18 @@ void ai_team_choosegfx () {
 	struct _team_tmpdata_ {
 		int ai_gfx;
 	} teamdat[MAX_TEAMS];
-	
+
 	int tm_nr;
 	int pl_nr;
 	int i, used;
 	_player *pl;
-	
+
 	/* find a ai player gfx for every team */
 	for (i = 0, tm_nr = 0; (i < gfx.player_gfx_count && tm_nr < MAX_TEAMS); i++) {
 		used = 0;
 		for (pl_nr = 0; pl_nr < MAX_PLAYERS; pl_nr++) {
-			if ((!PS_IS_aiplayer(players[pl_nr].state)) 
-				&& (PS_IS_used (players[pl_nr].state)) 
+			if ((!PS_IS_aiplayer(players[pl_nr].state))
+				&& (PS_IS_used (players[pl_nr].state))
 				&& i == players[pl_nr].gfx_nr)
 					used = 1;
 		}
@@ -66,7 +66,7 @@ void ai_team_choosegfx () {
 			tm_nr++;
 		}
 	}
-	
+
 	/*
 	 * give all ai players in the teams the right gfx
 	 */
@@ -91,8 +91,8 @@ ai_checkfield (int x, int y)
 }
 
 
-/* give the run away direction 
- * this function is even needed for the start of 
+/* give the run away direction
+ * this function is even needed for the start of
  * the game to place the players on a good position */
 int
 ai_easyrunaway (_point p, int range)
@@ -148,7 +148,7 @@ ai_easyrunaway (_point p, int range)
 };
 
 
-/* give the run away direction 
+/* give the run away direction
   the return value:				*/
 _airunaway
 ai_runawayfrom (_point p, int nearbomb, int range, signed char norecursive)
@@ -247,7 +247,7 @@ ai_runawayfrom (_point p, int nearbomb, int range, signed char norecursive)
 };
 
 
-/* count the points for dropping a bomb here 
+/* count the points for dropping a bomb here
    this will even count if there is any powerup*/
 int
 ai_bombpoints (_point pos, int range)
@@ -262,7 +262,7 @@ ai_bombpoints (_point pos, int range)
 		printf ("         pos.x=%d pos.y=%d range=%d\n", pos.x, pos.y, range);
 		return 0;
 	}
-		
+
     if (map.field[pos.x][pos.y].type != FT_block && map.field[pos.x][pos.y].type != FT_stone
         && ai_checkfield (pos.x, pos.y)) {
         for (d = 0; d < 4; d++) {
@@ -270,7 +270,7 @@ ai_bombpoints (_point pos, int range)
 
             for (r = 0;
                  (r < range
-                  && (p.x >= 0 && p.x < map.size.x && p.y >= 0 && p.y < map.size.y) 
+                  && (p.x >= 0 && p.x < map.size.x && p.y >= 0 && p.y < map.size.y)
 				  && (map.field[p.x][p.y].type == FT_nothing || map.field[p.x][p.y].type == FT_tunnel)); r++) {
                 p.x += dir_change[d].x;
                 p.y += dir_change[d].y;
@@ -370,7 +370,7 @@ ai_findnearbombs (_point pos)
         dist[d].x = pos.x + dir_change[d].x;
         dist[d].y = pos.y + dir_change[d].y;
 	}
-	
+
     while (!done) {
         done = 1;
         /* check every direction again */
@@ -398,7 +398,7 @@ ai_findnearbombs (_point pos)
 }
 
 
-/* check if we are still running and fill out the position 
+/* check if we are still running and fill out the position
 	return == 0 we're still walking ... else we have reached a point */
 inline int
 ai_checkpos (_player * pl, _point * pos)
@@ -480,7 +480,7 @@ inline int
 ai_checknewpos (_point pos, int d)
 {
     _point m;
-	
+
 	m.x = pos.x + dir_change[d].x;
 	m.y = pos.y + dir_change[d].y;
 
@@ -523,20 +523,20 @@ single_create_ai (int num_players)
 			}
 
         if (pl == NULL) {
-			d_printf ("single_create_ai: No free Player found.\n"); 
+			d_printf ("single_create_ai: No free Player found.\n");
             return -1;
 		}
 		else
-			d_printf ("single_create_ai: Player %d Created  Name:%s\n", pl - players, pl->name); 
+			d_printf ("single_create_ai: Player %d Created  Name:%s\n", pl - players, pl->name);
 	}
-	
+
 	if (pl != NULL)
 		return pl - players;
-	return -1;	
+	return -1;
 };
 
 
-/* single player game win/point screen 
+/* single player game win/point screen
  * 1. setup all player data
  * 2. setup second local player and ai players
  * 3. setup all other game related data
@@ -549,7 +549,7 @@ single_playergame (int second_player, int ai_players)
 
 	bman.p_nr = -1;
 	bman.p2_nr = -1;
-	
+
     /* delete player and teams from the game */
     for (p = 0; p < MAX_PLAYERS; p++) {
         players[p].points = 0;
@@ -564,11 +564,11 @@ single_playergame (int second_player, int ai_players)
 	for (p = 0; p < MAX_TEAMS; p++) {
 		teams[p].wins = 0;
 		teams[p].points = 0;
-		
+
 		for (done = 0; done < MAX_PLAYERS; done++)
 			teams[p].players[done] = NULL;
 	}
-	
+
 	done = 0;
     for (bman.p_nr = -1, p = 0; (bman.p_nr == -1 && p < MAX_PLAYERS); p++)
         if (!(PS_IS_used (players[p].state)))
@@ -584,7 +584,7 @@ single_playergame (int second_player, int ai_players)
 	do {
 		done = playermenu_selgfx (bman.p_nr);
 	} while (players[bman.p_nr].gfx_nr == -1 && done != -1);
-		
+
     players[bman.p_nr].state = PSF_used + PSF_alife + PSF_playing;
     strncpy (players[bman.p_nr].name, bman.playername, LEN_PLAYERNAME);
 
@@ -598,15 +598,15 @@ single_playergame (int second_player, int ai_players)
 
 	if (done == -1)
 		return;
-	
+
     single_create_ai (ai_players);
-	
+
 	if (bman.gametype == GT_team) {
 		playermenu ();
 		team_update ();
 		ai_team_choosegfx ();
 	}
-	
+
     bman.state = GS_ready;
 
     while (!done && bman.state != GS_quit && bman.state != GS_startup) {
@@ -616,7 +616,7 @@ single_playergame (int second_player, int ai_players)
         game_loop ();
         game_end ();
     }
-	
+
 	gfx_blitdraw ();
 	draw_logo ();
 	gfx_blitdraw ();
@@ -677,7 +677,7 @@ single_loop ()
                         else if (rawdir.bestdir != -1) {
                             pl->d = rawdir.bestdir;
                             pl->m = 1;
-                        } 
+                        }
 						else if (rawdir.bestdir == -1 && rawdir.dir == 0) {
 							/* no good ways found, just run in the opposite direction of the bomb */
 							if (map.field[(int) pl->pos.x][(int) pl->pos.y].type == FT_nothing ||
@@ -692,7 +692,7 @@ single_loop ()
                 player_ilness_loop (p);
                 player_move (p);
             }
-			else 
+			else
 				player_checkdeath (p);
         }
 
@@ -723,14 +723,14 @@ single_menu ()
             nrplayerlist[i].next = NULL;
         p++;
     }
-	
+
 	game_resetdata ();
-	
+
 	menu = menu_new ("Single Game", 380,240);
-	
+
 	menu_create_text (menu, "numpl", 20, 50, 12, 2, COLOR_yellow, "Number of\nAI Players");
 	aiplayer = menu_create_list (menu, "AI Players", 40, 90, 50, 100, nrplayerlist, &selnrplayer, 3);
-	
+
 	menu_create_button (menu,"Change Playernames" ,160, 50, 210, 4);
 
 	menu_create_bool (menu, "Use Second Player", 160, 90, 210, &second_player, 5);
@@ -739,11 +739,11 @@ single_menu ()
 	menu_create_button (menu, "Map Options", 180, 170, 150, 7);
 	menu_create_button (menu, "Main Menu", 30, 220, 150, 1);
 	menu_create_button (menu, "Start", 220, 220, 150, 2);
-	
+
 	menu_focus_id (menu, 2);
 	menu->looprunning = 1;
 	menu_draw (menu);
-	
+
 	do {
 		gfx_blitdraw ();
 		eventstate = s_fetchevent (&event);
@@ -754,25 +754,25 @@ single_menu ()
 			done = 0;
 			mapgamesetting ();
 		}
-		
+
 		if (done > 0 && menu->focus->id == 7) {
 			done = 0;
 			mapmenu ();
 		}
-		
+
 		if (done > 0 && menu->focus->id == 4) {
 			done = 0;
 			playernamemenu ();
 		}
-		
+
 		if (done > 0 && menu->focus->id == 3)
 			done = 0;
-		
+
 		s_calctimesync ();
-	} while (!done); 
-	
+	} while (!done);
+
 	bman.ai_players = selnrplayer - &nrplayerlist[0];
-	
+
 	if (menu->focus->id == 2)
 		single_playergame (second_player, bman.ai_players);
 

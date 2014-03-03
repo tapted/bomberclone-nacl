@@ -207,7 +207,7 @@ config_read ()
             continue;
 
         keyword = buf;
-        while (isspace (*keyword))
+        while (isspace ((int)*keyword))
             keyword++;
 
         value = strchr (buf, '=');
@@ -224,7 +224,7 @@ config_read ()
         if (strlen (value) == 0)
             continue;
         for (i = 0; i < (int) strlen (keyword); i++)
-            keyword[i] = tolower (keyword[i]);
+            keyword[i] = tolower ((int)keyword[i]);
 
         if (!strcmp (keyword, "playername")) {
             if (strlen (value) > LEN_PLAYERNAME) {
@@ -461,7 +461,7 @@ config_read ()
         if (!strcmp (keyword, "key_fullscreen"))
             keyb_gamekeys.keycode[BCK_fullscreen] = atoi (value);
         /*
-         * joypad config 
+         * joypad config
          */
         if (!strcmp (keyword, "joy_1_drop"))
    	        joy_keys[0].drop = atoi (value);
@@ -595,7 +595,7 @@ config_video ()
         {"1280x1024", NULL},
 		{"1600x1200", NULL},
         {"1920x1080", NULL},
-        {"1920x1200", NULL},        
+        {"1920x1200", NULL},
 		{"1280x800", NULL}
     };
     _charlist screenbpp[] = {
@@ -702,7 +702,7 @@ config_menu ()
             else
                 menuselect = -1;
             break;
-        case (1):              // player screen 
+        case (1):              // player screen
             playernamemenu ();
             break;
         case (2):              // keyboard settings
@@ -754,12 +754,12 @@ ReadPrgArgs (int argc, char **argv)
 	i=0;
 	while (argv[++i] != NULL) {
 		if (argv[i][0]=='-') {
-			if (argv[i+1] != NULL) 
+			if (argv[i+1] != NULL)
 				s=argv[i+1][0];
-			else 
+			else
 				s='-';
         	if (!strcmp (argv[i], "-port")) {
-            	if (s!='-') 
+            	if (s!='-')
 					strncpy (bman.port, argv[++i], LEN_PORT);
 					else {
 						printf("Error: Parameter required for -port\n");
@@ -791,7 +791,7 @@ ReadPrgArgs (int argc, char **argv)
 					}
 				}
         	if (!strcmp (argv[i], "-gamename")) {
-				if (s!='-') 
+				if (s!='-')
 					strncpy (bman.gamename, argv[++i], LEN_GAMENAME);
 					else {
 						printf("Error: Parameter required for -gamename\n");

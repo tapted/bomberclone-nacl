@@ -17,7 +17,7 @@ draw_player (_player * player)
     SDL_Rect src,
       dest;
     int i;
-	
+
     if ((int)player->pos.x < 0 || (int)player->pos.x >= map.size.x ||
         (int)player->pos.y < 0 || (int)player->pos.y >= map.size.y) {
         d_printf ("FATAL: Draw Player out of range : [%f,%f]\n", player->pos.x,
@@ -29,7 +29,7 @@ draw_player (_player * player)
         /* player is alife */
 		while (player->frame >= player->gfx->ani.frames)
 			player->frame -= player->gfx->ani.frames;
-	
+
         dest.w = src.w = player->gfx->ani.w;
         dest.h = src.h = player->gfx->ani.h;
         dest.x =
@@ -42,12 +42,14 @@ draw_player (_player * player)
         gfx_blit (player->gfx->ani.image, &src, gfx.screen, &dest, (player->pos.y * 256) + 128);
 
         /* if the player is ill, draw this image above him */
-        for (i = PI_max - 1; (i >= 0) && (player->ill[i].to <= 0.0f); i--);
+        for (i = PI_max - 1; (i >= 0) && (player->ill[i].to <= 0.0f); i--) {
+            /* this is probably a bug */
+        }
           if (i >= 0) {
 			  player->illframe += timefactor;
 	    	  while (player->illframe >= gfx.ill.frames)
 			     player->illframe -= gfx.ill.frames;
-			  
+
               dest.w = src.w = gfx.block.x * 2;
               dest.h = src.h = gfx.block.y * 2;
               src.x = 0;
@@ -61,7 +63,7 @@ draw_player (_player * player)
     }
 
     else if (PS_IS_respawn (player->state)) {
-        /* player is respawning 
+        /* player is respawning
 		 * first: draw the star */
 
         dest.w = src.w = gfx.respawn.image->w;
@@ -84,17 +86,17 @@ draw_player (_player * player)
             	gfx.offset.x + player->gfx->offset.x + player->pos.x * gfx.block.x;
         	dest.y =
             	gfx.offset.y + player->gfx->offset.y + player->pos.y * gfx.block.y;
-			
+
 	        dest.w = src.w = player->gfx->ani.w;
     	    dest.h = src.h = player->gfx->ani.h;
-			
+
 	        src.x = 0;
     	    src.y = 0;
 
         	gfx_blit (player->gfx->ani.image, &src, gfx.screen, &dest, 0xE000);
 		}
 	}
-	
+
     else {
         /* player is dead */
         dest.w = src.w = gfx.dead.image->w;
@@ -110,7 +112,7 @@ draw_player (_player * player)
 
         gfx_blit (gfx.dead.image, &src, gfx.screen, &dest, 0xFFFF);
     }
-	
+
     player->old = player->pos;  // save this position
 };
 
@@ -269,13 +271,13 @@ check_field (short int x, short int y)
 }
 
 
-/* check if there is any explosion on this field */	
+/* check if there is any explosion on this field */
 int check_exfield (short int x, short int y) {
     int res = 1, i;
 
     if (map.field[x][y].type == FT_stone || map.field[x][y].type == FT_block)
         res = 0;
-	
+
 	for (i = 0; (i < 4 && res == 1); i++)
 		if (map.field[x][y].ex[i].count > 0)
 			res = 0;
@@ -292,7 +294,7 @@ stepmove_player (int pl_nr)
     _point bomb1[MAX_PLAYERS * MAX_BOMBS],
       bomb2[MAX_PLAYERS * MAX_BOMBS];
     _player *p = &players[pl_nr];
-    
+
     int i,
       j,
       f;
@@ -357,7 +359,7 @@ stepmove_player (int pl_nr)
                 d.x = d.y = 0.0f;
             else if (bomb2[0].x != -1) {
                 /* new pos bomb, old pos bomb... check if it's the same
-                   use f to save if we found the bomb or not 
+                   use f to save if we found the bomb or not
                    f == 0 no bomb found, f == 1 bomb found  */
                 for (i = 0, f = 1; (bomb2[i].x != -1 && f == 1); i++)
                     for (f = 0, j = 0; (bomb1[j].x != -1 && f == 0); j++)
@@ -380,7 +382,7 @@ stepmove_player (int pl_nr)
 		/* check if we can go though a tunnel */
         if (_pos.x == 0.0f && _pos.y == 0.0f && map.field[(int)p->pos.x][(int)p->pos.y].type == FT_tunnel
             && p->tunnelto <= 0.0f) {
-				
+
 			int tunnelnr = map.field[(int)p->pos.x][(int)p->pos.y].special;
             d_printf ("Tunnel [%d] Player %s is going to (%d,%d)\n", tunnelnr, p->name,
                       map.tunnel[tunnelnr].x, map.tunnel[tunnelnr].y);
@@ -403,7 +405,7 @@ stepmove_player (int pl_nr)
 };
 
 
-/* check if the givin position is oky 
+/* check if the givin position is oky
    1 = ok, 0 = bad */
 int
 player_checkpos (int x, int y)
@@ -423,13 +425,13 @@ player_checkpos (int x, int y)
 
 
 
-/* Search if an killer exist for explosion at position */	
+/* Search if an killer exist for explosion at position */
 /* Must be used after check_exfield function */
-int 
-get_killer_for_explosion (short int x, short int y) 
+int
+get_killer_for_explosion (short int x, short int y)
 {
     int killer = -1, i;
-	
+
     //for (i = 0; (i < 4 && killer == -1); i++)
     for (i = 0; i < 4; i++)
         if (map.field[x][y].ex[i].count > 0) {
@@ -473,7 +475,7 @@ player_move (int pl_nr)
         /* the player just stopt moving so send data */
         if (GT_MP && p->m == 0 && p->old_m != 0)
             net_game_send_playermove (pl_nr, 1);
-        p->old_m = p->m;        // save the old state 
+        p->old_m = p->m;        // save the old state
         p->m = 0;
 
         /* check the players position */
@@ -565,9 +567,9 @@ get_player_on (float x, float y, int pl_nr[])
 void
 player_died (_player * player, signed char dead_by, int network)
 {
-	if ((player - players) != bman.p_nr && (player - players) != bman.p2_nr	&& PS_IS_netplayer (player->state) && network == 0) 
+	if ((player - players) != bman.p_nr && (player - players) != bman.p2_nr	&& PS_IS_netplayer (player->state) && network == 0)
 		return;
-	
+
     // player die !
     d_printf ("player_died net:%d pl_nr:%d dead_by_nr:%d - %-10s\n", network, player - players, dead_by, players[dead_by].name);
 
@@ -599,12 +601,12 @@ player_died (_player * player, signed char dead_by, int network)
     // Send player died when is local
     if (GT_MP && !network)
         net_game_send_player (player - players);
-	
+
     snd_play (SND_dead);
-	
+
 	if ((GT_SP || player == &players[bman.p_nr] || (IS_LPLAYER2 && player == &players[bman.p2_nr])
 		|| (PS_IS_aiplayer (player->state) && GT_MP_PTPM)) && bman.dropitemsondeath) {
-		flitems_dropitems ((player - players), player->pos, player->collect_shoes, 
+		flitems_dropitems ((player - players), player->pos, player->collect_shoes,
 							player->bombs_n - bman.start_bombs, player->range - bman.start_range);
 		}
 };
@@ -614,7 +616,7 @@ void
 draw_players ()
 {
     int p;
-	
+
     for (p = 0; p < MAX_PLAYERS; p++) {
         if (PS_IS_playing (players[p].state) && players[p].tunnelto <= 0)
             draw_player (&players[p]);
@@ -646,7 +648,7 @@ player_animation (_player * player)
         if ((int)player->frame < gfx.dead.frames)
             player->frame += (timefactor * ANI_PLAYERTIMEOUT);
     }
-	
+
 	/*
 	 * respawning animation
 	 */
@@ -661,7 +663,7 @@ void
 dead_playerani ()
 {
     int i;
-	
+
     for (i = 0; i < MAX_PLAYERS; i++)
         if (PS_IS_dead (players[i].state) || PS_IS_respawn (players[i].state)) {
             player_animation (&players[i]);
@@ -671,7 +673,7 @@ dead_playerani ()
 
 
 /*
-	calc the position on the screen for moving network players 
+	calc the position on the screen for moving network players
 */
 void
 player_calcpos ()
@@ -752,7 +754,7 @@ player_ilness_loop (int plnr)
                 p->illframe += timefactor;
                 if (p->illframe < 0 || p->illframe >= gfx.ill.frames)
                     p->illframe = 0.0f;
- 
+
                 if (type == PI_keys) {
                     /* switch direction for player key illness */
                     if (p->m > 0)
@@ -829,7 +831,7 @@ player_set_ilness (_player * p, int t, float new_to)
         break;
     }
     bman.updatestatusbar = 1;
-	
+
 	/* add or set the new timeout */
 	if (t == -1)
 		p->ill[type].to += new_to;
@@ -844,9 +846,9 @@ player_clear_ilness (_player * p, int type)
 {
     if (type < 0 || type >= PI_max)
         return;
-	
+
 	d_printf ("player_clear_ilness Player: %s Type: %d\n", p->name, type);
-	
+
     switch (type) {
     case PI_slow:
     case PI_fast:
@@ -872,7 +874,7 @@ void
 player_set_gfx (_player * p, signed char gfx_nr)
 {
 	d_printf ("player_set_gfx: name:%15s from gfx %d to gfx %d.\n", p->name, p->gfx_nr, gfx_nr);
-	
+
     p->gfx_nr = gfx_nr;
     if (p->gfx_nr < 0 || p->gfx_nr >= gfx.player_gfx_count)
         p->gfx_nr = -1;
@@ -897,7 +899,7 @@ player_findfreebomb (_player * player)
       res = -1,
       nr;
 
-    /* check every free bomb from next entry of the last 
+    /* check every free bomb from next entry of the last
        exploded bomb to the last exploded bomb */
     if (player->bomb_lastex < 0 || player->bomb_lastex >= MAX_BOMBS)
         player->bomb_lastex = 0;
@@ -906,7 +908,7 @@ player_findfreebomb (_player * player)
 		nr++;
         if (nr >= MAX_BOMBS) // start at 0
             nr = 0;
-		
+
         if (player->bombs[nr].state == BS_off) { /* check if this bomb is free */
             if (res == -1)
                 res = nr;
@@ -926,29 +928,29 @@ player_findfreebomb (_player * player)
 void player_checkdeath (int pnr) {
 	_player	*player = &players[pnr];
 	int i;
-	
-	/* respawn only as long as not the game end have reached 
+
+	/* respawn only as long as not the game end have reached
 	 * and when the gametype is deathmatch mode */
-    if (map.state == MS_normal && bman.gametype == GT_deathmatch 
+    if (map.state == MS_normal && bman.gametype == GT_deathmatch
 		&& PS_IS_dead (player->state) && player->frame >= gfx.dead.frames) {
 		/* check new position */
 		d_printf ("player_checkdeath: Respawn for player %s\n", player->name);
 
 		player->pos.x = -1;
 		player->pos.y = -1;
-		
+
 		map_respawn_player(pnr);
 
 		if (player->pos.x != -1 && player->pos.y != -1) {
 			player->frame = 0;
 			player->state |= PSF_respawn;
-			
+
 			if (GT_MP)
 				net_game_send_respawn (pnr);
 		}
     }
-	
-	/* if the player is respawning check for finish of the animation 
+
+	/* if the player is respawning check for finish of the animation
 	 * reset some data of the player and force update of the status bar */
     if (bman.gametype == GT_deathmatch && PS_IS_respawn (player->state) && player->frame >= 2*gfx.respawn.frames) {
 		d_printf ("Respawn completed for player %s\n", player->name);
@@ -956,7 +958,7 @@ void player_checkdeath (int pnr) {
 		player->state &= (0xFF - PSF_respawn);
 		player->state |= PSF_alife;
 		special_clear (pnr);
-		
+
 		if (bman.dropitemsondeath) {
 			player->speed = bman.start_speed;
 			player->bombs_n = bman.start_bombs;
@@ -969,7 +971,7 @@ void player_checkdeath (int pnr) {
 		for (i = 0; i < PI_max; i++)
 			if (player->ill[i].to > 0.0f)
 				player_clear_ilness (player, i);
-			
+
 		if (GT_MP) {
 			net_game_send_respawn (pnr);
 	        net_game_send_ill (pnr);
@@ -1002,7 +1004,7 @@ void player_check (int pl_nr) {
 	else {
 		players[pl_nr].m = 0;
 	}
-	
+
 	player_checkdeath (pl_nr);
 };
 
@@ -1023,7 +1025,7 @@ player_delete (int pl_nr) {
     }
     else {
     	player_set_gfx (&players[pl_nr], -1);
-        players[pl_nr].state &= (0xFF - (PSF_used + PSF_net + PSF_alife + PSF_ai)); /* delete 
+        players[pl_nr].state &= (0xFF - (PSF_used + PSF_net + PSF_alife + PSF_ai)); /* delete
 												player flags */
         players[pl_nr].net.net_istep = 0; // needed for disconnect during the update
         bman.players_nr_s--;
@@ -1035,12 +1037,12 @@ player_delete (int pl_nr) {
 
     if (GT_MP_PTPM && bman.notifygamemaster)
         send_ogc_update ();
-	
+
 	if (bman.p_nr == pl_nr)
 		bman.p_nr = -1;
 	if (bman.p2_nr == pl_nr)
 		bman.p2_nr = -1;
-	
+
 	d_playerdetail (" Player Left ... Playerlist\n");
 };
 
@@ -1058,7 +1060,7 @@ player_delete (int pl_nr) {
  */
 void player2_join () {
 	int i;
-	
+
 	if (IS_LPLAYER2) {
 		menu_displaymessage ("Sorry", "Sorry there is already a second player from this computer.");
 		return;
@@ -1107,11 +1109,11 @@ void player2_add (int pl_nr) {
 void team_update () {
 	int cnt[MAX_TEAMS] = { 0,0,0,0 };
 	int pl;
-	
+
 	for (pl = 0; pl < MAX_PLAYERS; pl++) {
 		if (PS_IS_used (players[pl].state) && (players[pl].team_nr < 0 || players[pl].team_nr >= MAX_TEAMS))
 			players[pl].team_nr = 0;
-		
+
 		if (PS_IS_used (players[pl].state)) {
 			teams[players[pl].team_nr].players[cnt[players[pl].team_nr]] = &players[pl];
 			cnt[players[pl].team_nr]++;
@@ -1119,7 +1121,7 @@ void team_update () {
 	}
 	for (pl = 0; pl < MAX_TEAMS; pl++) for (;cnt[pl] < MAX_PLAYERS; cnt[pl]++)
 		teams[pl].players[cnt[pl]] = NULL;
-	
+
 	// d_teamdetail ("Teaminformation");
 }
 
@@ -1128,10 +1130,10 @@ void team_update () {
  * if the team number is -1 then join this player into the losing team
  */
 void team_choose (_player *pl) {
-	
+
 	if (pl->team_nr >= 0 && pl->team_nr < MAX_TEAMS)
 		return;
-	
+
 	d_printf ("team_choose need to rewrite this part\n");
 	if (PS_IS_aiplayer (pl->state))
 		pl->team_nr = 1;

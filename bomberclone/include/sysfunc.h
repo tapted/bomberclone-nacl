@@ -34,8 +34,8 @@ extern char *s_gethomedir ();
 extern int s_countbits (int nbomb, int nr);
 extern char* getfilename(char* path);
 
-extern inline Sint16 s_swap16 (Sint16 i);
-extern inline Sint32 s_swap32 (Sint32 i);
+extern Sint16 s_swap16 (Sint16 i);
+extern Sint32 s_swap32 (Sint32 i);
 
 extern _direntry *s_getdir (char *path);
 extern _direntry *s_dirfilter (_direntry *dirstart, signed char dirflags);
@@ -61,14 +61,14 @@ extern _direntry *s_dirfilter (_direntry *dirstart, signed char dirflags);
 #endif
 
 /*
- * somehow this works.. 
+ * somehow this works..
  * something missing in the stdarg.h file?
  */
 #ifndef HAVE_VSNPRINTF
 	#define vsnprintf _vsnprintf
 #endif
 
-extern inline void s_calctimesync ();
+extern void s_calctimesync ();
 extern void rect_clipping (SDL_Rect *src, SDL_Rect *dest, SDL_Rect *window, SDL_Rect *csrc, SDL_Rect *cdest);
 extern void charlist_fillarraypointer (_charlist *list, int c);
 extern _charlist *charlist_findtext (_charlist *list, char *text);

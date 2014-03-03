@@ -47,7 +47,7 @@
 #define MAX_FIELDSIZE_Y 31
 #define MIN_FIELDSIZE_X 15
 #define MIN_FIELDSIZE_Y 9
-#define MAX_FIELDANIMATION 2048 /* number of points on the field to be animated exploding 
+#define MAX_FIELDANIMATION 2048 /* number of points on the field to be animated exploding
                                    stoned or powerups */
 
 #define EXPLOSIONTIMEOUT 0.5
@@ -82,7 +82,7 @@
 
 #define AUTOSTART 20            /* server autostart */
 
-#define MW_IS_GFX_SELECT(__gfx_nr,__result) for (__result = (MAX_PLAYERS-1); (__result >= 0) && (players[__result].gfx_nr != __gfx_nr); __result--);
+#define MW_IS_GFX_SELECT(__gfx_nr,__result) do { for (__result = (MAX_PLAYERS-1); (__result >= 0) && (players[__result].gfx_nr != __gfx_nr); __result--) {} } while (0)
 
 #define CUTINT(__x) (__x-floorf(__x)) // cut the integer part off
 #define postofield(__x) ((int)(rintf(__x))) // position to int with rounding
@@ -91,7 +91,7 @@
 
 #include <SDL.h>
 
-enum _backgound {               // to load some diffrent logos.. 
+enum _backgound {               // to load some diffrent logos..
         BG_start = 0,
         BG_net,
         BG_conf

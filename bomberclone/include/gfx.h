@@ -44,15 +44,15 @@ struct __gfx {
 	_point res;		// resolution
 	_point block;	// block size
 	short int bpp;  // bits per pixel
-	
+
     int fullscreen;
 
 	_point offset;    // where the game field starts
-	
+
 	_gfxplayer *players;
 	int player_gfx_count;
 	short int postab[256];  // table of points where we need to go to.
-	
+
 	_gfxani field[FT_max];  // the field animations
 	SDL_Surface *menu_field[FT_max];
 	_gfxani powerup[3];	// powerup field animation
@@ -63,9 +63,9 @@ struct __gfx {
 	SDL_Surface *ghost;	// gfx of the ghost player.
 	SDL_Surface *ghost_small;	// small ghost player
 	_gfxani respawn;	// respawn image
-	
+
 	_gfxani menuselect; // The Menu Select GFX (the bomb ?)
-	
+
     SDL_Surface *logo;
 } typedef _gfx;
 
@@ -104,8 +104,8 @@ extern void gfxengine_init ();
 extern void gfx_blitdraw ();
 extern void gfx_blit (SDL_Surface *srci, SDL_Rect *srcr, SDL_Surface *desti, SDL_Rect *destr, int y);
 extern void gfx_blitsort ();
-extern inline void gfx_blitsortclear ();
-extern inline void gfx_blitupdaterectclear ();
+extern void gfx_blitsortclear ();
+extern void gfx_blitupdaterectclear ();
 extern void gfx_blitupdaterectdraw ();
 extern void gfx_blitupdaterectadd (SDL_Rect *rect);
 

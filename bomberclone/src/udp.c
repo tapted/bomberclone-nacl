@@ -80,7 +80,7 @@ dns_filladdr (char *host, int hostlen, char *port, int portlen, int ai_family,
         if ((err =
              getnameinfo ((struct sockaddr *) sAddr, addrlen, host, hostlen, port, portlen,
                           NI_NUMERICHOST | NI_NUMERICSERV)) < 0) {
-            
+
 		    d_printf ("dns_filladdr (getnameinfo): %s\n", gai_strerror (err));
             return -1;
         }
@@ -136,7 +136,7 @@ udp_send (int sock, char *text, int len, struct _sockaddr *sAddr, int ai_family)
 void udp_sendbroadcast (int sock, char *text, int len, struct _sockaddr *sAddr, int ai_family)
 {
 	char value;
-	
+
 	value = 1;
 	setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &value, sizeof (value));
 	udp_send (sock, text, len, sAddr, ai_family);
@@ -229,7 +229,7 @@ udp_server (char *port, int ai_family)
 
 /*
    gets some text
-   RESULT: 0 for nothing on there 
+   RESULT: 0 for nothing on there
 */
 int
 udp_get (int sock, char *text, int len, struct _sockaddr *sAddr, int ai_family)
@@ -238,14 +238,14 @@ udp_get (int sock, char *text, int len, struct _sockaddr *sAddr, int ai_family)
 	int clen;
 #else
 	unsigned int clen;
-#endif	
-	unsigned int msglen;
+#endif
+	ssize_t msglen;
     fd_set sockset;
     struct timeval tval;
 
 	if (sock == -1)
 		return -1;
-	
+
     /* what version of tcp/ip we're using */
     if (ai_family == AF_INET)
         clen = sizeof (struct sockaddr_in);

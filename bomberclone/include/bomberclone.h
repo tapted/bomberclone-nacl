@@ -56,7 +56,7 @@ struct {
 
 struct {
     char datapath[512];
-	
+
     int p_nr;                   // playernumber of the first local player
 	int p2_nr;					// playernumber of the second local player
 	int p_servnr;				// Playernumber of the Server
@@ -87,9 +87,9 @@ struct {
 	int broadcast;
 	int autostart;			// time for an autostart of the game
 	int minplayers;			// minimal number of players
-	
+
 	int askplayername;		// ask player for name at startup
-	
+
 	int start_bombs;		// start values
 	int start_range;
 	float start_speed;
@@ -110,12 +110,12 @@ struct {
 
 
 extern _bomberclone bman;
-extern Uint32 timestamp;
+extern int timestamp;
 extern float timefactor;
 extern float timediff;
 extern int debug;
 
-// Game routines.. 
+// Game routines..
 extern void game_draw_info ();
 extern void game_keys_loop ();
 extern void game_loop ();

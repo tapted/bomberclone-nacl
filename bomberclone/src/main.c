@@ -16,9 +16,9 @@ _team *teams;					// team stuff
 _point dir_change[] ={	{ -1,  0 },		// changes for directions
 						{  1,  0 },
 						{  0, -1 },
-						{  0,  1 } }; 
+						{  0,  1 } };
 
-Uint32 timestamp;				// timestamp
+int timestamp;				// timestamp
 float timefactor = 0.0f;		/* factor for the time time of the last loop
 								   1.0f would be 20ms */
 float timediff = 0.0f;			/* last loop timedifference in seconds */
@@ -31,11 +31,11 @@ main (int argc, char **argv)
 	_menu *menu;
 
     printf ("Bomberclone version %s\n", VERSION);
-	
+
 	players = malloc (sizeof (_player) * MAX_PLAYERS);
 	teams = malloc (sizeof (_team) * MAX_TEAMS);
 	gfxengine_init ();
-	
+
     if (SDL_Init (SDL_INIT_VIDEO| SDL_INIT_NOPARACHUTE) != 0) {
         d_printf ("Unable to init SDL: %s\n", SDL_GetError ());
         return (1);
@@ -43,7 +43,7 @@ main (int argc, char **argv)
 
     SDL_InitSubSystem ( SDL_INIT_JOYSTICK );
 	SDL_EnableUNICODE(1);
-	
+
 	config_init (argc, argv);
 	keyb_init ();
 
@@ -51,13 +51,13 @@ main (int argc, char **argv)
 
 		menu = menu_new ("Bomberclone", 400, 250);
 		menu_create_label (menu, VERSION, 300, 240, 0, COLOR_yellow);
-		menu_create_button (menu, "Single Game", -1, 70, 200, 0); 
-		menu_create_button (menu, "Multiplayer Game", -1, 100, 200, 1); 
+		menu_create_button (menu, "Single Game", -1, 70, 200, 0);
+		menu_create_button (menu, "Multiplayer Game", -1, 100, 200, 1);
 		menu_create_button (menu, "Options", -1, 130, 200, 2);
 		menu_create_button (menu, "Manual", -1, 160, 200, 3);
-		menu_create_button (menu, "Quit Game", -1, 190, 200, 4); 
+		menu_create_button (menu, "Quit Game", -1, 190, 200, 4);
 		menuselect = menu_loop (menu);
-		menu_delete (menu);		
+		menu_delete (menu);
 		switch (menuselect) {
 			case (0) : // Singleplayer
 				single_menu ();

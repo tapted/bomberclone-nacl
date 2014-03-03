@@ -132,7 +132,7 @@ mapmenu ()
             else
                 strcpy (map.tileset, mapname);
             break;
-			
+
 		case (16): /* Game Settings */
 			mapgamesetting ();
 			break;
@@ -276,7 +276,7 @@ mapinfo ()
 // font_setcolor (255,255,255,0);
 // font_draw (3 + x - (WIN_X / 2) ,1 + y, text, 0);
 
-    /* Special FREE 
+    /* Special FREE
        sprintf (text, "Push Specials: %d", map.sp_push);
        font_setcolor (128,128,128,0);
        font_draw (x , y, text, 0);
@@ -336,17 +336,17 @@ void mapgamesetting () {
 	};
 	_charlist *gametype_sel = &gametype[bman.gametype];
 	_menu *menu;
-	
+
 	charlist_fillarraypointer (gametype, 3);
-	
+
     while (menuselect != -1 && bman.state != GS_quit) {
         menu = menu_new ("Game Options", 420, 400);
-		
+
 		menu_create_label (menu, "Start Values", 25, 50, 0, COLOR_brown);
 		menu_create_entry (menu, "Bombs:", 25, 80, 150, &bman.start_bombs, MAX_BOMBS, MENU_entryint32, 1);
-		menu_create_entry (menu, "Speed:", 25,110, 150, &bman.start_speed, MAX_SPEED, MENU_entryfloat, 2);
+		menu_create_entry (menu, "Speed:", 25,110, 150, &bman.start_speed, 0 /* MAX_SPEED -- ?? need to be an int for |len| */ , MENU_entryfloat, 2);
 		menu_create_entry (menu, "Range:", 25,140, 150, &bman.start_range, MAX_RANGE, MENU_entryint32, 3);
-		
+
 		menu_create_label (menu, "Other Values", 200, 50, 0, COLOR_brown);
         menu_create_entry (menu, "Gametime:", 200, 80, 150, &bman.init_timeout, 1200, MENU_entryint32, 4);
 
@@ -354,15 +354,15 @@ void mapgamesetting () {
         menu_create_entry (menu, "Bomb Time:", 25, 220, 200, &bman.bomb_tickingtime, 1200, MENU_entryfloat, 5);
 		menu_create_label (menu, "Gametype", 25, 250, 0, COLOR_brown);
 		menu_create_list (menu, "GameType", 25, 280, 150, 60, gametype, &gametype_sel, 6);
-		menu_create_bool (menu, "Drop Items", 200, 280, 150, &bman.dropitemsondeath, 7);	
-		
+		menu_create_bool (menu, "Drop Items", 200, 280, 150, &bman.dropitemsondeath, 7);
+
         menu_create_button (menu, "Ok", -1, 380, 150, 0);
         menuselect = menu_loop (menu);
 		menu_delete (menu);
-		
+
 		if (menuselect == 0) {
 			bman.gametype = gametype_sel- &gametype[0];
 			menuselect = -1;
 		}
-    }	
+    }
 };

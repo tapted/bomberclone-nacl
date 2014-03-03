@@ -14,11 +14,13 @@ SDL_CONFIG := $(NACLPORTS_REPO)/src/out/repository/SDL-1.2.14/build-nacl-pnacl/s
 C := $(NACL_SDK_ROOT)/toolchain/mac_pnacl/bin/pnacl-clang
 CC := $(NACL_SDK_ROOT)/toolchain/mac_pnacl/bin/pnacl-clang++
 LD := $(NACL_SDK_ROOT)/toolchain/mac_pnacl/bin/pnacl-ld
+LDFLAGS := -L$(NACL_SDK_ROOT)/lib/pnacl/Debug
+CFLAGS := -I$(NACL_SDK_ROOT)/include
 
 #TARGET_HOST := $(shell $(CC) -dumpmachine)
 TARGET_HOST := nacl
 
-export NACL_SDK_ROOT NACL_ARCH NACL_GLIBC SDL_CONFIG C CC LD
+export NACL_SDK_ROOT NACL_ARCH NACL_GLIBC SDL_CONFIG C CC LD LDFLAGS CFLAGS
 
 all: bomberclone
 
@@ -61,14 +63,16 @@ autoconf.updated: sdl_image.updated
 	( cd bomberclone && \
 	  ACLOCAL='aclocal -I $(NACLPORTS_REPO)/src/out/repository/SDL-1.2.14' autoreconf --install && \
 	  cp -v $(NACLPORTS_REPO)/src/build_tools/config.sub . && \
-	  cd build && \
-	  ../configure --host=$(TARGET_HOST) )
+	  ./configure --host=$(TARGET_HOST) )
+## TODO: Fix out-of-tree builds.
+#	  cd build && \
+#	  ../configure --host=$(TARGET_HOST) )
 	touch $@
 
 bootstrap: autoconf.updated
 	@echo 'Bootstrapped. `rm *.updated` to rebuild.'
 
 bomberclone: bootstrap
-	$(MAKE) -C bomberclone/build
+	$(MAKE) -C bomberclone
 
 .PHONY: bootstrap
