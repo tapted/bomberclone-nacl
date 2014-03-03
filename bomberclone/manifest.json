@@ -1,0 +1,15 @@
+{
+  "name": "My NaCl App",
+  "description": "Simple game implemented using Native Client",
+  "manifest_version": 2,
+  "version": "0.1",
+  "icons": {
+    "16": "app_assets/icon16.png",
+    "128": "app_assets/icon128.png"
+  },
+  "app": {
+    "launch": {
+      "local_path": "main.html"
+    }
+  }
+}
