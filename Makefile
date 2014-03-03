@@ -2,15 +2,23 @@ LOCAL_RULES := $(wildcard local-*.mk)
 include $(LOCAL_RULES)
 
 NACL_VERSION ?= pepper_33
-#NACL_ARCH := pnacl
-NACL_ARCH := i686
-NACL_GLIBC := 1
-
 NACL_SDK_PATH ?= $(realpath ..)/nacl_sdk
 NACLPORTS_REPO ?= $(realpath ..)/naclports
 NACL_SDK_ROOT := $(NACL_SDK_PATH)/$(NACL_VERSION)
 
-export NACL_SDK_ROOT NACL_ARCH NACL_GLIBC
+NACL_ARCH := pnacl
+#NACL_ARCH := i686
+#NACL_GLIBC := 1
+SDL_CONFIG := $(NACLPORTS_REPO)/src/out/repository/SDL-1.2.14/build-nacl-pnacl/sdl-config
+
+C := $(NACL_SDK_ROOT)/toolchain/mac_pnacl/bin/pnacl-clang
+CC := $(NACL_SDK_ROOT)/toolchain/mac_pnacl/bin/pnacl-clang++
+LD := $(NACL_SDK_ROOT)/toolchain/mac_pnacl/bin/pnacl-ld
+
+#TARGET_HOST := $(shell $(CC) -dumpmachine)
+TARGET_HOST := nacl
+
+export NACL_SDK_ROOT NACL_ARCH NACL_GLIBC SDL_CONFIG C CC LD
 
 all: bomberclone
 
@@ -40,15 +48,21 @@ naclports.updated: $(NACLPORTS_REPO)/src/Makefile
 	touch $@
 
 sdl.updated: naclsdk.updated naclports.updated
-	$(MAKE) -C $(NACLPORTS_REPO)/src sdl sdl_image
+	$(MAKE) -C $(NACLPORTS_REPO)/src sdl
+	chmod +x $(SDL_CONFIG)
 	touch $@
 
-autoconf.updated: sdl.updated
+sdl_image.updated: sdl.updated
+	$(MAKE) -C $(NACLPORTS_REPO)/src sdl_image
+	touch $@	
+
+autoconf.updated: sdl_image.updated
 	mkdir bomberclone/build || true
 	( cd bomberclone && \
-	  ACLOCAL='aclocal -I $(NACLPORTS_REPO)/src/out/repository/SDL-1.2.14' autoreconf && \
+	  ACLOCAL='aclocal -I $(NACLPORTS_REPO)/src/out/repository/SDL-1.2.14' autoreconf --install && \
+	  cp -v $(NACLPORTS_REPO)/src/build_tools/config.sub . && \
 	  cd build && \
-	  ../configure )
+	  ../configure --host=$(TARGET_HOST) )
 	touch $@
 
 bootstrap: autoconf.updated
