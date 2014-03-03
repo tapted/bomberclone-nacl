@@ -287,3 +287,28 @@ dns_net_getip (char *host)
 
 	return dnsip;
 };
+
+// Missing NaCL stuff.
+int getaddrinfo(const char* hostname,
+                const char* servname,
+                const struct addrinfo* hints,
+                struct addrinfo** res) {
+    return -1;
+}
+
+int getnameinfo(const struct sockaddr* sa,
+                socklen_t salen,
+                char* host,
+                socklen_t hostlen,
+                char* serv,
+                socklen_t servlen,
+                unsigned int flags) {
+    return -1;
+}
+
+void freeaddrinfo(struct addrinfo* ai) {}
+
+char* gai_strerror(int ecode) {
+    static char error_string[] = "gai_strerror(?)";
+    return error_string;
+}

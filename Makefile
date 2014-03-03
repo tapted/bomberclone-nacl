@@ -14,7 +14,7 @@ SDL_CONFIG := $(NACLPORTS_REPO)/src/out/repository/SDL-1.2.14/build-nacl-pnacl/s
 C := $(NACL_SDK_ROOT)/toolchain/mac_pnacl/bin/pnacl-clang
 CC := $(NACL_SDK_ROOT)/toolchain/mac_pnacl/bin/pnacl-clang++
 LD := $(NACL_SDK_ROOT)/toolchain/mac_pnacl/bin/pnacl-ld
-LDFLAGS := -L$(NACL_SDK_ROOT)/lib/pnacl/Debug
+LDFLAGS := -L$(NACL_SDK_ROOT)/lib/pnacl/Debug -lnacl_io
 CFLAGS := -I$(NACL_SDK_ROOT)/include
 
 #TARGET_HOST := $(shell $(CC) -dumpmachine)
