@@ -16,10 +16,11 @@ $(NACL_SDK_PATH)/naclsdk:
 	  rmdir nacl_sdk && \
 	  touch naclsdk)
 
-naclsdk: $(NACL_SDK_PATH)/naclsdk
+naclsdk.updated: $(NACL_SDK_PATH)/naclsdk
 	$< update
+	touch $@
 
-bootstrap: naclsdk
+bootstrap: naclsdk.updated
 	echo "Bootstrapped."
 
-.PHONY: naclsdk bootstrap
+.PHONY: bootstrap
