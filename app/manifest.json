@@ -1,15 +1,15 @@
 {
-  "name": "Bomberclone",
-  "description": "Port of bomberclone to PNaCL",
-  "manifest_version": 2,
+  "name": "Bomberclone PNaCL",
+  "description": "PNaCL port of bomberclone - www.bomberclone.de. GPLv2. Source: http://github.com/tapted/bomberclone-nacl",
   "version": "0.1",
+  "manifest_version": 2,
+  "app": {
+    "background": {
+      "scripts": ["window.js"]
+    }
+  },
   "icons": {
     "16": "app_assets/icon16.png",
     "128": "app_assets/icon128.png"
-  },
-  "app": {
-    "launch": {
-      "local_path": "main.html"
-    }
   }
 }

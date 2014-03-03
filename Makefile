@@ -22,7 +22,7 @@ LD := $(TOOLCHAIN_PATH)/bin/pnacl-ld
 
 PNACL_FINALIZE := $(TOOLCHAIN_PATH)/bin/pnacl-finalize
 LDFLAGS := -L$(NACL_SDK_ROOT)/lib/pnacl/Debug -lnacl_io
-CFLAGS := -I$(NACL_SDK_ROOT)/include
+CFLAGS := -I$(NACL_SDK_ROOT)/include -O2
 
 #TARGET_HOST := $(shell $(CC) -dumpmachine)
 TARGET_HOST := nacl
@@ -77,7 +77,7 @@ autoconf.updated: sdl_libs.updated
 	( cd bomberclone && \
 	  ACLOCAL='aclocal -I $(NACLPORTS_REPO)/src/out/repository/SDL-1.2.14' autoreconf --install && \
 	  cp -v $(NACLPORTS_REPO)/src/build_tools/config.sub . && \
-	  ./configure --host=$(TARGET_HOST) )
+	  ./configure --host=$(TARGET_HOST) --disable-debug)
 	touch $@
 
 bootstrap: autoconf.updated

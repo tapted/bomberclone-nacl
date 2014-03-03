@@ -13,6 +13,7 @@ bomberclone/configure
 bomberclone/depcomp
 bomberclone/install-sh
 bomberclone/missing
+bomberclone/src/bomberclone
 
 app/bomberclone.pexe
 app/data
