@@ -2,6 +2,8 @@ LOCAL_RULES := $(wildcard local-*.mk)
 include $(LOCAL_RULES)
 
 NACL_VERSION ?= pepper_33
+NACL_TOOLCHAIN ?= mac_pnacl
+
 NACL_SDK_PATH ?= $(realpath ..)/nacl_sdk
 NACLPORTS_REPO ?= $(realpath ..)/naclports
 NACL_SDK_ROOT := $(NACL_SDK_PATH)/$(NACL_VERSION)
@@ -9,16 +11,13 @@ NACL_SDK_ROOT := $(NACL_SDK_PATH)/$(NACL_VERSION)
 GCLIENT ?= $(shell which gclient)
 AUTOMAKE ?= $(shell which gclient)
 
-NACL_TOOLCHAIN := mac_pnacl
 NACL_ARCH := pnacl
-#NACL_ARCH := i686
-#NACL_GLIBC := 1
-SDL_CONFIG := $(NACLPORTS_REPO)/src/out/repository/SDL-1.2.14/build-nacl-pnacl/sdl-config
 
 TOOLCHAIN_PATH := $(NACL_SDK_ROOT)/toolchain/$(NACL_TOOLCHAIN)
 C := $(TOOLCHAIN_PATH)/bin/pnacl-clang
 CC := $(TOOLCHAIN_PATH)/bin/pnacl-clang++
 LD := $(TOOLCHAIN_PATH)/bin/pnacl-ld
+SDL_CONFIG := $(TOOLCHAIN_PATH)/usr/bin/sdl-config
 
 PNACL_FINALIZE := $(TOOLCHAIN_PATH)/bin/pnacl-finalize
 LDFLAGS := -L$(NACL_SDK_ROOT)/lib/pnacl/Debug -lnacl_io
@@ -48,19 +47,16 @@ $(NACL_SDK_PATH)/naclsdk:
 	  rmdir nacl_sdk && \
 	  touch naclsdk )
 
-$(NACLPORTS_REPO)/src/Makefile: requirements.updated
-	test -n "$(NACLPORTS_REPO)"
-	mkdir "$(NACLPORTS_REPO)" || true
-	( cd $(NACLPORTS_REPO) && \
-	  gclient config --name=src  https://chromium.googlesource.com/external/naclports.git )
-	touch $@
-
 naclsdk.updated: $(NACL_SDK_PATH)/naclsdk
 	$< update
 	touch $@
 
-naclports.updated: $(NACLPORTS_REPO)/src/Makefile
-	( cd $(NACLPORTS_REPO) && $(GCLIENT) sync )
+naclports.updated: requirements.updated
+	test -n "$(NACLPORTS_REPO)"
+	mkdir "$(NACLPORTS_REPO)" || true
+	( cd $(NACLPORTS_REPO) && \
+	  $(GCLIENT) config --name=src  https://chromium.googlesource.com/external/naclports.git && \
+          $(GCLIENT) sync )
 	touch $@
 
 sdl.updated: naclsdk.updated naclports.updated
