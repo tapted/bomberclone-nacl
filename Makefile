@@ -1,8 +1,13 @@
 LOCAL_RULES := $(wildcard local-*.mk)
 include $(LOCAL_RULES)
 
+SYSTEM := $(shell uname -s)
+TOOLCHAIN_PREFIX ?= $(if \
+  $(findstring Darwin, $(SYSTEM)),mac,$(if \
+    $(findstring CYGWIN, $(SYSTEM)),win,linux))
+
 NACL_VERSION ?= pepper_33
-NACL_TOOLCHAIN ?= mac_pnacl
+NACL_TOOLCHAIN ?= $(TOOLCHAIN_PREFIX)_pnacl
 
 NACL_SDK_PATH ?= $(realpath ..)/nacl_sdk
 NACLPORTS_REPO ?= $(realpath ..)/naclports
