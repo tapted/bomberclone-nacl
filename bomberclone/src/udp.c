@@ -83,7 +83,8 @@ dns_filladdr (char *host, int hostlen, char *port, int portlen, int ai_family,
              getnameinfo ((struct sockaddr *) sAddr, addrlen, host, hostlen, port, portlen,
                           NI_NUMERICHOST | NI_NUMERICSERV)) < 0) {
 
-		    d_printf ("dns_filladdr (getnameinfo): %s\n", gai_strerror (err));
+		    d_printf ("dns_filladdr(host=%s/%d, port=%s/%d, family=%d, addr=%p) (getnameinfo): %s\n",
+                      host, hostlen, port, portlen, ai_family, sAddr, gai_strerror (err));
             return -1;
         }
 
@@ -347,7 +348,11 @@ int getnameinfo(const struct sockaddr* sa,
                 char* serv,
                 socklen_t servlen,
                 unsigned int flags) {
-    return -1;
+    char txt[255];
+    strncpy (host, inet_ntoa (((struct sockaddr_in *) sa)->sin_addr), hostlen);
+    sprintf (txt, "%d", ntohs (((struct sockaddr_in *) sa)->sin_port));
+    strncpy (serv, txt, servlen);
+    return 0;
 }
 
 void freeaddrinfo(struct addrinfo* ai) {

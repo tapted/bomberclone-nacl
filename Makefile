@@ -93,6 +93,6 @@ app: bomberclone
 	(cd bomberclone && tar -c --exclude='Makefile*' --exclude=CVS --exclude=.* data) | (cd app && tar x)
 
 zip:
-	(cd app && zip -r ../bomberclone-app.zip *)
+	(cd app && zip -r ../bomberclone-app.zip * .bomberclone.cfg)
 
 .PHONY: bootstrap app
