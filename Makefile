@@ -6,7 +6,7 @@ TOOLCHAIN_PREFIX ?= $(if \
   $(findstring Darwin, $(SYSTEM)),mac,$(if \
     $(findstring CYGWIN, $(SYSTEM)),win,linux))
 
-NACL_VERSION ?= pepper_33
+NACL_VERSION ?= pepper_canary
 NACL_TOOLCHAIN ?= $(TOOLCHAIN_PREFIX)_pnacl
 
 NACL_SDK_PATH ?= $(realpath ..)/nacl_sdk
@@ -91,5 +91,8 @@ app: bomberclone
 	cp bomberclone/src/bomberclone app/bomberclone.pexe
 	$(PNACL_FINALIZE) app/bomberclone.pexe
 	(cd bomberclone && tar -c --exclude='Makefile*' --exclude=CVS --exclude=.* data) | (cd app && tar x)
+
+zip:
+	(cd app && zip -r ../bomberclone-app.zip *)
 
 .PHONY: bootstrap app

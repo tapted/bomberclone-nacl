@@ -5,6 +5,8 @@
 
 #include "udp.h"
 
+#include <errno.h>
+
 extern char *dns_net_getip (char *host);
 extern int dns_filladdr (char *host, int hostlen, char *port, int portlen, int ai_family,
                          struct _sockaddr *sAddr);
@@ -184,6 +186,7 @@ udp_server (char *port, int ai_family)
 
     ai_family_ = 0;
 
+    errno = 0;
     if ((err = getaddrinfo (NULL, port, &hints, &res)) == 0) {
         sres = res;
         while ((ai_family_ == 0) && (sres)) {
@@ -202,13 +205,28 @@ udp_server (char *port, int ai_family)
             freeaddrinfo (res);
             return -1;
         }
+    } else {
+        d_printf ("getaddrinfo(..) failed with code %d. Backup plan.\n", err);
+        err = 0;  // Simulate success.
+        res = 0;  // Nothing to free.
+        sres = &hints;
+        struct sockaddr_in* inet = (struct sockaddr_in*)&hints.ai_addr;
+        hints.ai_addrlen = sizeof(*inet);
+        ai_family_ = AF_INET;
+        inet->sin_family = AF_INET;
+        inet->sin_port = htons(atoi(port));
+        //inet->sin_addr.s_addr = inet_addr("192.168.158.130");
+        inet->sin_addr.s_addr = INADDR_ANY;
+    }
 
-        if ((sock = socket (sres->ai_family, SOCK_DGRAM, 0)) < 0) {
+    if (err == 0) {
+        if ((sock = socket (ai_family_, SOCK_DGRAM, 0)) < 0) {
             perror ("UDP_Server (socket):");
             freeaddrinfo (res);
             return -1;
         }
 
+        d_printf ("Calling bind on socket: %d\n", sock);
         if ((err = bind (sock, sres->ai_addr, sres->ai_addrlen)) < 0) {
             perror ("UDP_Server (bind):");
             close (sock);
@@ -217,10 +235,17 @@ udp_server (char *port, int ai_family)
         }
 
         freeaddrinfo (res);
-    }
-    else {
+        socklen_t len;
+        struct sockaddr_in inet;
+        if (getsockname (sock, (struct sockaddr*)&inet, &len) == 0) {
+            d_printf ("Successfuly bound UDP server socket: %s\n", inet_ntoa(inet.sin_addr));
+        } else {
+            d_printf ("bind() said success, but getsockname said failure.");
+        }
+    } else {
         sock = -1;
-        d_printf ("UDP_Server (getaddrinfo):%s\n", gai_strerror (err));
+        perror("getaddrinfo");
+        d_printf ("UDP_Server: getaddrinfo(NULL, %s, UDP): %s\n", port, gai_strerror (err));
     }
 #endif
 
@@ -293,7 +318,26 @@ int getaddrinfo(const char* hostname,
                 const char* servname,
                 const struct addrinfo* hints,
                 struct addrinfo** res) {
-    return -1;
+    // Emulate getaddrinfo using gethostbyname. Yes, this kinda works.
+    struct hostent* hp;
+    if ((hp = gethostbyname(hostname ? hostname : "0.0.0.0")) == 0) {
+        perror("gethostbyname");
+        d_printf("hostname='%s:%s'\n", hostname, servname);
+        return -1;
+    }
+
+    struct in_addr **pptr = (struct in_addr **)hp->h_addr_list;
+    *res = calloc(1, sizeof(struct addrinfo));
+    (*res)->ai_family = hp->h_addrtype;
+    struct sockaddr_in* inet = calloc(1, sizeof(struct sockaddr_in));
+    (*res)->ai_addrlen = sizeof(*inet);
+    (*res)->ai_addr = (struct sockaddr*)inet;
+
+    inet->sin_family = (*res)->ai_family;
+    inet->sin_port = htons(atoi(servname));
+    inet->sin_addr = **pptr;
+
+    return 0;
 }
 
 int getnameinfo(const struct sockaddr* sa,
@@ -306,9 +350,15 @@ int getnameinfo(const struct sockaddr* sa,
     return -1;
 }
 
-void freeaddrinfo(struct addrinfo* ai) {}
+void freeaddrinfo(struct addrinfo* ai) {
+    if (!ai)
+        return;
+    free(ai->ai_addr);
+    free(ai);
+}
 
 char* gai_strerror(int ecode) {
-    static char error_string[] = "gai_strerror(?)";
+    static char error_string[32];
+    snprintf(error_string, sizeof(error_string), "gai_strerror(%d)", ecode);
     return error_string;
 }

@@ -194,7 +194,7 @@ config_read ()
 
     config = fopen (filename, "r");
     if (config == NULL) {
-        d_printf ("Error: Config file not found!\n");
+        printf ("Error: Config file not found at %s\n", filename);
         return -1;
     }
     d_printf ("Reading Config-file: %s", filename);
