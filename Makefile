@@ -10,8 +10,8 @@ NACL_VERSION ?= pepper_33
 NACL_TOOLCHAIN ?= $(TOOLCHAIN_PREFIX)_pnacl
 
 ## Comment these out if you don't want debugging / optimizations
-DEBUG_FLAGS := -g
-#OPT_FLAGS := -O2
+#DEBUG_FLAGS := -g
+OPT_FLAGS := -O2
 
 NACL_SDK_PATH ?= $(realpath ..)/nacl_sdk
 NACLPORTS_REPO ?= $(realpath ..)/naclports
