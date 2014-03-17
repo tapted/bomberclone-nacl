@@ -18,3 +18,5 @@ bomberclone/src/bomberclone
 
 app/bomberclone.pexe
 app/data
+app/manifest.json
+app/*.nexe

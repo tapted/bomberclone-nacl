@@ -9,6 +9,10 @@ TOOLCHAIN_PREFIX ?= $(if \
 NACL_VERSION ?= pepper_33
 NACL_TOOLCHAIN ?= $(TOOLCHAIN_PREFIX)_pnacl
 
+## Comment these out if you don't want debugging / optimizations
+DEBUG_FLAGS := -g
+#OPT_FLAGS := -O2
+
 NACL_SDK_PATH ?= $(realpath ..)/nacl_sdk
 NACLPORTS_REPO ?= $(realpath ..)/naclports
 NACL_SDK_ROOT := $(NACL_SDK_PATH)/$(NACL_VERSION)
@@ -24,17 +28,29 @@ CC := $(TOOLCHAIN_PATH)/bin/pnacl-clang++
 LD := $(TOOLCHAIN_PATH)/bin/pnacl-ld
 SDL_CONFIG := $(TOOLCHAIN_PATH)/usr/bin/sdl-config
 
-PNACL_FINALIZE := $(TOOLCHAIN_PATH)/bin/pnacl-finalize
+PNACL_FINALIZE := echo $(TOOLCHAIN_PATH)/bin/pnacl-finalize
+PNACL_TRANSLATE := $(TOOLCHAIN_PATH)/bin/pnacl-translate --allow-llvm-bitcode-input
+
 LDFLAGS := -L$(NACL_SDK_ROOT)/lib/pnacl/Debug -lnacl_io
-CFLAGS := -I$(NACL_SDK_ROOT)/include -O2
+CFLAGS := -I$(NACL_SDK_ROOT)/include $(DEBUG_FLAGS) $(OPT_FLAGS)
 
 #TARGET_HOST := $(shell $(CC) -dumpmachine)
 TARGET_HOST := nacl
+
+COMMON_FILES := manifest.json styles.css main.js .bomberclone.cfg app_assets data
+APP_FILES := $(COMMON_FILES) bomberclone.nmf main.html window.js bomberclone.pexe
+DBGAPP_FILES := $(COMMON_FILES) bomberclone-debug.nmf main-debug.html window-debug.js bomberclone_x86_32.nexe bomberclone_x86_64.nexe
 
 export NACL_SDK_ROOT NACL_ARCH NACL_GLIBC
 export C CC LD LDFLAGS CFLAGS SDL_CONFIG
 
 all: app
+
+%_x86_32.nexe : %.pexe
+	$(PNACL_TRANSLATE) $< -arch x86-32 -o $@
+
+%_x86_64.nexe : %.pexe
+	$(PNACL_TRANSLATE) $< -arch x86-64 -o $@
 
 requirements.updated: $(GCLIENT) $(AUTOMAKE)
 	@test -n "$(GCLIENT)" || (echo "glcient required - unable to find gclient in PATH" && false)
@@ -84,15 +100,31 @@ autoconf.updated: sdl_libs.updated
 bootstrap: autoconf.updated
 	@echo 'Bootstrapped. `rm *.updated` to rebuild.'
 
-bomberclone: bootstrap
+bomberclone/src/bomberclone: bootstrap
 	$(MAKE) -C bomberclone
 
-app: bomberclone
+clean:
+	$(MAKE) -C bomberclone clean
+
+app/bomberclone.pexe: bomberclone/src/bomberclone
 	cp bomberclone/src/bomberclone app/bomberclone.pexe
-	$(PNACL_FINALIZE) app/bomberclone.pexe
+
+assets:
 	(cd bomberclone && tar -c --exclude='Makefile*' --exclude=CVS --exclude=.* data) | (cd app && tar x)
 
-zip:
-	(cd app && zip -9 -r ../bomberclone-app.zip * .bomberclone.cfg)
+dbgapp: app/bomberclone_x86_32.nexe app/bomberclone_x86_64.nexe assets
 
-.PHONY: bootstrap app
+app: app/bomberclone.pexe assets
+	cp app/manifest-rel.json app/manifest.json
+	$(PNACL_FINALIZE) app/bomberclone.pexe
+
+zip:
+	(cd app && zip -9 -r ../bomberclone-app.zip $(APP_FILES))
+
+dbgapp: app/bomberclone_x86_32.nexe app/bomberclone_x86_64.nexe assets
+	cp app/manifest-debug.json app/manifest.json
+
+dbgzip:
+	(cd app && zip -9 -r ../bomberclone-app-DEBUG.zip $(DBGAPP_FILES))
+
+.PHONY: bootstrap app dbgapp assets clean zip dbgzip
