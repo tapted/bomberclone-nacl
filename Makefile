@@ -46,11 +46,16 @@ export C CC LD LDFLAGS CFLAGS SDL_CONFIG
 
 all: app
 
-%_x86_32.nexe : %.pexe
+%_x86_32.nexe: %.pexe
 	$(PNACL_TRANSLATE) $< -arch x86-32 -o $@
 
-%_x86_64.nexe : %.pexe
+%_x86_64.nexe: %.pexe
 	$(PNACL_TRANSLATE) $< -arch x86-64 -o $@
+
+%.json.updated: app/%.json
+	rm *.json.updated || true
+	cp $< app/manifest.json
+	touch $@
 
 requirements.updated: $(GCLIENT) $(AUTOMAKE)
 	@test -n "$(GCLIENT)" || (echo "glcient required - unable to find gclient in PATH" && false)
@@ -114,17 +119,20 @@ assets:
 
 dbgapp: app/bomberclone_x86_32.nexe app/bomberclone_x86_64.nexe assets
 
-app: app/bomberclone.pexe assets
-	cp app/manifest-rel.json app/manifest.json
+app: app/bomberclone.pexe assets manifest-rel.json.updated
 	$(PNACL_FINALIZE) app/bomberclone.pexe
 
-zip:
-	(cd app && zip -9 -r ../bomberclone-app.zip $(APP_FILES))
+bomberclone-app.zip: manifest-rel.json.updated
+	rm $@
+	(cd app && zip -9 -r ../$@ $(APP_FILES))
 
-dbgapp: app/bomberclone_x86_32.nexe app/bomberclone_x86_64.nexe assets
-	cp app/manifest-debug.json app/manifest.json
+dbgapp: app/bomberclone_x86_32.nexe app/bomberclone_x86_64.nexe assets manifest-debug.json.updated
 
-dbgzip:
-	(cd app && zip -9 -r ../bomberclone-app-DEBUG.zip $(DBGAPP_FILES))
+bomberclone-app-DEBUG.zip: manifest-debug.json.updated
+	rm $@
+	(cd app && zip -9 -r ../$@ $(DBGAPP_FILES))
+
+zip: bomberclone-app.zip
+dbgzip: bomberclone-app-DEBUG.zip
 
 .PHONY: bootstrap app dbgapp assets clean zip dbgzip

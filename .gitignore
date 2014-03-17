@@ -1,6 +1,6 @@
 /local-*.mk
 /*.updated
-/bomberclone-app.zip
+/*.zip
 
 Makefile.in
 bomberclone/aclocal.m4

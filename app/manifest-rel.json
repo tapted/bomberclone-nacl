@@ -1,5 +1,5 @@
 {
-  "name": "Bomberclone PNaCL [DEBUG]",
+  "name": "Bomberclone PNaCL",
   "description": "PNaCL port of bomberclone - www.bomberclone.de. GPLv2. Source: http://github.com/tapted/bomberclone-nacl",
   "version": "0.2.2",
   "manifest_version": 2,
