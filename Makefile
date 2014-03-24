@@ -18,7 +18,7 @@ NACLPORTS_REPO ?= $(realpath ..)/naclports
 NACL_SDK_ROOT := $(NACL_SDK_PATH)/$(NACL_VERSION)
 
 GCLIENT ?= $(shell which gclient)
-AUTOMAKE ?= $(shell which gclient)
+AUTOMAKE ?= $(shell which automake)
 
 NACL_ARCH := pnacl
 
@@ -58,7 +58,7 @@ all: app
 	touch $@
 
 requirements.updated: $(GCLIENT) $(AUTOMAKE)
-	@test -n "$(GCLIENT)" || (echo "glcient required - unable to find gclient in PATH" && false)
+	@test -n "$(GCLIENT)" || (echo "gclient required - unable to find gclient in PATH" && false)
 	@test -n "$(AUTOMAKE)" || (echo " autotools required - unable to find automake in PATH" && false)
 	touch $@
 
